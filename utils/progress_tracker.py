@@ -13,6 +13,8 @@ class ProgressTracker:
     max_catches_key = "max_catches"
     completion_dates_key = "completion_dates"
 
+    MAX_PATTERN_LENGTH = 6  # Max length of repeating patterns
+
     def __init__(self, main_widget: "MainWidget"):
         self.completed_patterns, self.max_catches, self.completion_dates = (
             self.load_progress()
@@ -46,27 +48,51 @@ class ProgressTracker:
         with open(self.filepath, "w") as file:
             json.dump(data, file, indent=4)
 
+    def get_related_patterns(self, pattern: str):
+        """
+        Return all patterns that start with the same base sequence as the given pattern.
+        Create patterns of increasing length up to MAX_PATTERN_LENGTH if they don't exist.
+        """
+        base_sequence = pattern[0]  # Get the first character (or first 2 if desired)
+
+        related_patterns = []
+        for length in range(1, self.MAX_PATTERN_LENGTH + 1):
+            related_pattern = base_sequence * length  # Create patterns like 'D', 'DD', 'DDD', etc.
+            related_patterns.append(related_pattern)
+
+            # Ensure the pattern exists in max_catches, even if not already present
+            if related_pattern not in self.max_catches:
+                self.max_catches[related_pattern] = 0  # Default value of 0 catches
+
+        return related_patterns
+
     def set_max_catches(self, pattern, catches):
+        # If this is a repeating letter pattern, update all related patterns
+        if len(set(pattern)) == 1:  # Ensure it's a pattern of repeating letters
+            related_patterns = self.get_related_patterns(pattern)
+            for related_pattern in related_patterns:
+                self.max_catches[related_pattern] = catches
+                if catches >= 100:
+                    self.completed_patterns.add(related_pattern)
+                else:
+                    self.completed_patterns.discard(related_pattern)
+
+                # Handle the completion date
+                if catches == 0:
+                    if related_pattern in self.completion_dates:
+                        del self.completion_dates[related_pattern]
+                        self.main_widget.pattern_table.remove_date_item(related_pattern)
+                else:
+                    self.completion_dates[related_pattern] = self.get_current_human_date()
+                    self.main_widget.pattern_table.update_completion_date(related_pattern)
+
+        # Update the specific pattern
         self.max_catches[pattern] = catches
-        
-        # If catches is 0, remove the completion date from the JSON
-        if catches == 0:
-            if pattern in self.completion_dates:
-                del self.completion_dates[pattern]
-                # remove the date from the table and from the settings
-                self.main_widget.pattern_table.remove_date_item(pattern)
-        else:
-            # Save the completion date using the human-readable format
-            self.completion_dates[pattern] = self.get_current_human_date()
-            # Update the completion date in the table
-            self.main_widget.pattern_table.update_completion_date(pattern)
-        if catches >= 100:
-            self.completed_patterns.add(pattern)
-        else:
-            self.completed_patterns.discard(pattern)
+
+        # Save the progress after making changes
         self.save_progress()
 
-    def update_completion_date(self, pattern, date = None):
+    def update_completion_date(self, pattern, date=None):
         # Update the date with the new human-readable format
         date = date or self.get_current_human_date()
         self.completion_dates[pattern] = date

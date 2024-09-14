@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from pattern_table.pattern_table import PatternTable
 
 
-class TableSorter:
+class BaseTableSorter:
     def __init__(self, table: "PatternTable"):
         self.table = table
 

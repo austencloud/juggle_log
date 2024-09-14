@@ -1,11 +1,11 @@
-from pattern_table.table_sorter import TableSorter
+from pattern_table.table_sorters.base_table_sorter import BaseTableSorter
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QTableWidgetItem
 from pattern_table.pattern_spin_box import PatternSpinBox
 from pattern_table.pattern_row import PatternRow  # Import PatternRow
 
 
-class MaxCatchesSorter(TableSorter):
+class MaxCatchesSorter(BaseTableSorter):
     def sort(self, order: Qt.SortOrder):
         """Sort by max catches."""
         self.table.setSortingEnabled(False)
@@ -47,7 +47,7 @@ class MaxCatchesSorter(TableSorter):
 
             # Create a new PatternRow object
             new_pattern_row = PatternRow(self.table)
-            
+
             # Pass the new row to the PatternSpinBox
             new_spin_box = PatternSpinBox(new_pattern_row, pattern_text)
             new_spin_box.setRange(0, 100)

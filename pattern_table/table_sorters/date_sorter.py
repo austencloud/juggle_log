@@ -1,8 +1,9 @@
 from datetime import datetime
-from pattern_table.table_sorter import TableSorter
+from pattern_table.table_sorters.base_table_sorter import BaseTableSorter
 from PyQt6.QtCore import Qt
 
-class DateSorter(TableSorter):
+
+class DateSorter(BaseTableSorter):
     def sort(self, order: Qt.SortOrder):
         """Sort by date (most recent to least recent)."""
         self.table.setSortingEnabled(False)

@@ -3,10 +3,10 @@ from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import QTableWidget, QHeaderView, QTableWidgetItem
 from PyQt6.QtCore import Qt
 
-from pattern_table.date_sorter import DateSorter
-from pattern_table.max_catches_sorter import MaxCatchesSorter
+from pattern_table.table_sorters.date_sorter import DateSorter
+from pattern_table.table_sorters.max_catches_sorter import MaxCatchesSorter
 from pattern_table.pattern_row import PatternRow
-from pattern_table.pattern_sorter import PatternSorter
+from pattern_table.table_sorters.pattern_name_sorter import PatternNameSorter
 from pattern_table.pattern_spin_box import PatternSpinBox
 
 if TYPE_CHECKING:
@@ -17,7 +17,8 @@ from datetime import datetime
 
 class PatternTable(QTableWidget):
     COLUMN_HEADERS = ["Pattern", "Max Catches", "Date"]
-    COMPLETED_COLOR = QColor(144, 238, 144)
+    COMPLETED_COLOR = QColor(144, 238, 144)  # Green for completed
+    ROW_STRIPE_COLOR = QColor(240, 240, 240)  # Alternating row color (grayish)
     DATE_NOT_AVAILABLE = ""
 
     def __init__(self, main_widget: "MainWidget"):
@@ -34,7 +35,7 @@ class PatternTable(QTableWidget):
         self.sorting_enabled = True
 
         # Initialize sorters
-        self.pattern_sorter = PatternSorter(self)
+        self.pattern_name_sorter = PatternNameSorter(self)
         self.max_catches_sorter = MaxCatchesSorter(self)
         self.date_sorter = DateSorter(self)
 
@@ -56,10 +57,13 @@ class PatternTable(QTableWidget):
         header_font.setBold(False)
         header.setFont(header_font)
 
+        # Set alternating row colors for better readability
+        self.setAlternatingRowColors(True)
+
     def handle_header_click(self, logical_index):
         """Handle sorting when a header is clicked."""
         if logical_index == 0:  # Pattern Column
-            self.pattern_sorter.sort(self.sort_order[0])
+            self.pattern_name_sorter.sort(self.sort_order[0])
         elif logical_index == 1:  # Max Catches Column
             self.max_catches_sorter.sort(self.sort_order[1])
         elif logical_index == 2:  # Date Column
@@ -73,23 +77,49 @@ class PatternTable(QTableWidget):
         )
 
     def update_pattern_table(self, selected_throws, pattern_length):
+        # Clear the table first
         self.setRowCount(0)
+        
         if not selected_throws:
             return
 
         sorted_throws = sorted(selected_throws)
-        patterns = self.pattern_generator.generate_patterns(
-            sorted_throws, pattern_length
-        )
+        patterns = self.pattern_generator.generate_patterns(sorted_throws, pattern_length)
+        
+        # Set the row count to match the number of patterns
         self.setRowCount(len(patterns))
 
+        # Add each pattern row and highlight if completed
         for i, pattern in enumerate(patterns):
             self.add_pattern_row(i, pattern)
+
+            # Check if the pattern has max catches of 100 and highlight accordingly
+            if self.progress_tracker.is_completed(pattern):
+                row = PatternRow(self)
+                row.highlight_if_completed(i, pattern)
+
 
     def add_pattern_row(self, row_index, pattern):
         row = PatternRow(self)
         row.add_row_items(row_index, pattern)
         row.highlight_if_completed(row_index, pattern)
+
+        # Apply alternating row colors
+        if row_index % 2 == 0:
+            for col in range(self.columnCount()):
+                item = self.item(row_index, col)
+                if item:
+                    item.setBackground(self.ROW_STRIPE_COLOR)
+
+    def remove_highlight(self, row_index):
+        """Remove the green highlight from a row if it no longer meets the criteria."""
+        for col in range(self.columnCount()):
+            item = self.item(row_index, col)
+            if item:
+                if row_index % 2 == 0:
+                    item.setBackground(self.ROW_STRIPE_COLOR)  # Even row: stripe color
+                else:
+                    item.setBackground(Qt.GlobalColor.white)  # Odd row: white background
 
     def remove_date_item(self, pattern):
         for row in range(self.rowCount()):
@@ -98,7 +128,6 @@ class PatternTable(QTableWidget):
                 if date_item:
                     self.removeCellWidget(row, 2)
                     self.takeItem(row, 2)
-        # remove it from settings
 
     def update_completion_date(self, pattern):
         # Locate the row based on the pattern
@@ -139,3 +168,4 @@ class PatternTable(QTableWidget):
         header_font.setPointSize(self.main_widget.width() // 50)
         header_font.setBold(False)  # Ensure header is not bold
         header.setFont(header_font)
+

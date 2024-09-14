@@ -35,8 +35,12 @@ class PatternRow:
         self.table.setItem(row_index, 2, date_item)
 
     def highlight_if_completed(self, row_index: int, pattern: str):
+        """Highlight the row if completed, otherwise remove the highlight."""
         if self.table.progress_tracker.is_completed(pattern):
             for col in [0, 2]:
                 item = self.table.item(row_index, col)
                 if item:
                     item.setBackground(self.table.COMPLETED_COLOR)
+        else:
+            # If not completed, remove the highlight and restore the original colors
+            self.table.remove_highlight(row_index)

@@ -13,8 +13,10 @@ class ThrowButtonsWidget(QWidget):
         ("F", "Flat"),
         ("B", "Behind the back"),
         ("P", "Penguin"),
-        ("Usl", "Under same leg"),
-        ("Uol", "Under opposite leg"),
+        ("O", "Over the top"),
+        ("Od", "Over the top double"),
+        ("Us", "Under same leg"),
+        ("Uo", "Under opposite leg"),
     ]
 
     def __init__(self, control_panel: "ControlPanel"):
