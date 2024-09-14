@@ -64,3 +64,4 @@ class MaxCatchesSorter(BaseTableSorter):
                 new_pattern_row.highlight_if_completed(new_index, pattern_text)
 
         self.table.setSortingEnabled(True)
+        self.table.resize_pattern_table()

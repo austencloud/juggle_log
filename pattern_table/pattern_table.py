@@ -126,8 +126,15 @@ class PatternTable(QTableWidget):
             if self.item(row, 0).text() == pattern:
                 date_item = self.item(row, 2)
                 if date_item:
-                    self.removeCellWidget(row, 2)
-                    self.takeItem(row, 2)
+                    # set the date item text to ""
+                    date_item.setText("")
+                    # self.removeCellWidget(row, 2)
+                    # self.takeItem(row, 2)
+                    # Set the background color of the row's cells to grey
+                    for col in range(self.columnCount()):
+                        item = self.item(row, col)
+                        if item:
+                            item.setBackground(self.ROW_STRIPE_COLOR)
 
     def update_completion_date(self, pattern):
         # Locate the row based on the pattern

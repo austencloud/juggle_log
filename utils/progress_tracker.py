@@ -53,9 +53,9 @@ class ProgressTracker:
         Return all patterns that start with the same base sequence as the given pattern.
         Create patterns of increasing length up to MAX_PATTERN_LENGTH if they don't exist.
         """
-        base_sequence = pattern[0]  # Get the first character (or first 2 if desired)
-
+        base_sequence = self.extract_repeating_base(pattern)
         related_patterns = []
+
         for length in range(1, self.MAX_PATTERN_LENGTH + 1):
             related_pattern = base_sequence * length  # Create patterns like 'D', 'DD', 'DDD', etc.
             related_patterns.append(related_pattern)
@@ -66,9 +66,23 @@ class ProgressTracker:
 
         return related_patterns
 
+    def extract_repeating_base(self, pattern: str):
+        """
+        Extract the repeating base of a pattern, whether it's a single character or a substring.
+        For example:
+        - 'OdOdOd' returns 'Od'
+        - 'DDD' returns 'D'
+        """
+        for length in range(1, len(pattern) // 2 + 1):  # Only check up to half the length
+            base = pattern[:length]
+            # Check if the pattern is just repetitions of this base
+            if pattern == base * (len(pattern) // length):
+                return base
+        return pattern  # If no repeating base is found, return the full pattern
+
     def set_max_catches(self, pattern, catches):
-        # If this is a repeating letter pattern, update all related patterns
-        if len(set(pattern)) == 1:  # Ensure it's a pattern of repeating letters
+        # If this is a repeating pattern (single character or substring), update all related patterns
+        if self.is_repeating_pattern(pattern):  
             related_patterns = self.get_related_patterns(pattern)
             for related_pattern in related_patterns:
                 self.max_catches[related_pattern] = catches
@@ -92,7 +106,7 @@ class ProgressTracker:
             else:
                 self.completed_patterns.discard(pattern)
 
-            # Update the completion date for related patterns
+            # Handle the completion date
             if catches == 0:
                 if pattern in self.completion_dates:
                     del self.completion_dates[pattern]
@@ -101,11 +115,18 @@ class ProgressTracker:
                 self.completion_dates[pattern] = self.get_current_human_date()
                 self.main_widget.pattern_table.update_completion_date(pattern)
 
-        # Update the specific pattern
-        self.max_catches[pattern] = catches
-
         # Save the progress after making changes
         self.save_progress()
+
+    def is_repeating_pattern(self, pattern):
+        """
+        Check if a pattern consists of repeating substrings.
+        For example:
+        - 'DDD' is repeating
+        - 'OdOdOd' is repeating
+        """
+        base = self.extract_repeating_base(pattern)
+        return len(pattern) > len(base) and pattern == base * (len(pattern) // len(base))
 
     def update_completion_date(self, pattern, date=None):
         # Update the date with the new human-readable format
