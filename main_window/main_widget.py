@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from control_panel.control_panel import ControlPanel
 from utils.pattern_generator import PatternGenerator
-from pattern_table_widget import PatternTable
+from pattern_table_widget.pattern_table_widget import PatternTable
 from utils.progress_tracker import ProgressTracker
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QMainWindow
 
