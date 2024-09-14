@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow
-from main_widget import MainWidget
+from main_window.main_widget import MainWidget
 from .main_window_geometry_manager import MainWindowGeometryManager
 
 

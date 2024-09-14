@@ -4,7 +4,6 @@ from .throw_buttons_widget import ThrowButtonsWidget
 
 if TYPE_CHECKING:
     from .control_panel import ControlPanel
-    from main_widget import MainWidget
 
 
 class PatternLengthInputWidget(QWidget):

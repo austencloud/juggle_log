@@ -4,7 +4,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QSpinBox, QHeaderView
 
 if TYPE_CHECKING:
-    from main_widget import MainWidget
+    from main_window.main_widget import MainWidget
 
 
 class PatternTable(QTableWidget):

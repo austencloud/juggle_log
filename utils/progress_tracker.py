@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from PyQt6.QtWidgets import QMessageBox, QListWidget, QTableWidgetItem
 
 if TYPE_CHECKING:
-    from main_widget import MainWidget
+    from main_window.main_widget import MainWidget
 
 
 class ProgressTracker:

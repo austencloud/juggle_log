@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSpinBox
+
 from .pattern_length_input_widget import PatternLengthInputWidget
 from .throw_buttons_widget import ThrowButtonsWidget
 
 if TYPE_CHECKING:
-    from main_widget import MainWidget
+    from main_window.main_widget import MainWidget
 
 
 class ControlPanel(QWidget):
