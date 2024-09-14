@@ -3,45 +3,45 @@ from PyQt6.QtWidgets import QApplication, QMainWindow
 from main_widget import MainWidget
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowTitle("Juggling Pattern Tracker")
-
-        # Get the screen geometry
-        screen_geometry = QApplication.primaryScreen().availableGeometry()
-
-        # Set window size as a percentage of screen size (e.g., 80% of screen width and 70% of screen height)
-        screen_width = screen_geometry.width()
-        screen_height = screen_geometry.height()
-        window_width = int(screen_width * 0.8)
-        window_height = int(screen_height * 0.7)
-
-        # Resize the window to the calculated dimensions
+        self.app: QApplication = app
+        self.setWindowTitle("Juggle Log")
+        screen_width, screen_height = self.get_screen_geometry()
+        window_width, window_height = self.calculate_window_size(screen_width, screen_height)
         self.resize(window_width, window_height)
-
-        # Center the window on the screen
-        self.centerWindow()
-
-        # Set the main widget
+        self.center_window()
         self.main_widget = MainWidget(self)
         self.setCentralWidget(self.main_widget)
 
-    def centerWindow(self):
+    def get_screen_geometry(self):
+        """Get the screen geometry."""
+        screen_geometry = self.app.primaryScreen().availableGeometry()
+        return screen_geometry.width(), screen_geometry.height()
+
+    def calculate_window_size(self, screen_width, screen_height):
+        """Calculate the window size based on screen dimensions."""
+        window_width = int(screen_width * 0.8)
+        window_height = int(screen_height * 0.7)
+        return window_width, window_height
+
+    def center_window(self):
+        """Center the window on the screen."""
         frame = self.frameGeometry()
-        center = QApplication.primaryScreen().availableGeometry().center()
+        center = self.app.primaryScreen().availableGeometry().center()
         frame.moveCenter(center)
         self.move(frame.topLeft())
 
-
 def main():
+    """Main entry point of the application."""
     app = QApplication(sys.argv)
-    main_window = MainWindow()
-    main_window.show()
-    sys.exit(app.exec())
-
+    try:
+        main_window = MainWindow(app)
+        main_window.show()
+        sys.exit(app.exec())
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

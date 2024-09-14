@@ -1,30 +1,23 @@
 from typing import TYPE_CHECKING
-from pattern_generator import PatternGenerator
-from progress_tracker import ProgressTracker
-from PyQt6.QtGui import QFont, QColor
-from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
     QPushButton,
     QLabel,
-    QTableWidget,
-    QTableWidgetItem,
     QSpinBox,
-    QMainWindow,
-    QSizePolicy,
     QGridLayout,
-    QHeaderView,
 )
 
 
 if TYPE_CHECKING:
-    from main import MainWindow
     from main_widget import MainWidget
 
 
 class ControlPanelWidget(QWidget):
+    THROW_BUTTONS = ["S", "D", "L", "F", "B", "P", "Usl", "Uol"]
+    PATTERN_LENGTH_LABEL = "Pattern Length:"
+
     def __init__(self, main_widget: "MainWidget"):
         super().__init__(main_widget)
         self.main_widget = main_widget
@@ -39,7 +32,7 @@ class ControlPanelWidget(QWidget):
 
         # Pattern length input
         length_layout = QHBoxLayout()
-        length_layout.addWidget(QLabel("Pattern Length:"))
+        length_layout.addWidget(QLabel(self.PATTERN_LENGTH_LABEL))
         self.length_input = QSpinBox(self)
         self.length_input.setRange(1, 10)
         self.length_input.setValue(3)
@@ -50,14 +43,9 @@ class ControlPanelWidget(QWidget):
         self.setLayout(layout)
 
     def create_throw_buttons(self):
-        # Create a grid layout
         buttons_layout = QGridLayout()
 
-        # Define the throws
-        throws = ["S", "D", "L", "F", "B", "P", "Usl", "Uol"]
-
-        # Add buttons to the grid layout with 4 columns
-        for index, throw in enumerate(throws):
+        for index, throw in enumerate(self.THROW_BUTTONS):
             button = QPushButton(throw, self)
             button.setCheckable(True)
             button.clicked.connect(self.update_selected_throws)
@@ -68,7 +56,7 @@ class ControlPanelWidget(QWidget):
         return buttons_layout
 
     def update_selected_throws(self):
-        sender = self.sender()
+        sender: QPushButton = self.sender()
         throw = sender.text()
 
         if sender.isChecked():

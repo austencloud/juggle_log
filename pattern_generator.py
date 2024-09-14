@@ -11,10 +11,8 @@ class PatternGenerator:
         self.main_widget = main_widget
 
     def generate_patterns(self, throws, length):
-        # Use product to generate all possible patterns
         all_patterns = set("".join(p) for p in product(throws, repeat=length))
 
-        # Filter out cyclic duplicates
         unique_patterns = set()
         for pattern in all_patterns:
             if not any(
