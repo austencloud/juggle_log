@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from control_panel.control_panel import ControlPanel
+from pattern_table.pattern_table import PatternTable
 from utils.pattern_generator import PatternGenerator
-from pattern_table_widget.pattern_table_widget import PatternTable
 from utils.progress_tracker import ProgressTracker
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QMainWindow
 
@@ -28,3 +28,4 @@ class MainWidget(QWidget):
     def resizeEvent(self, event):
         QMainWindow.resizeEvent(self.main_window, event)
         self.control_panel.resize_control_panel_widget()
+        self.pattern_table.resize_pattern_table()
