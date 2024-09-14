@@ -85,6 +85,21 @@ class ProgressTracker:
                 else:
                     self.completion_dates[related_pattern] = self.get_current_human_date()
                     self.main_widget.pattern_table.update_completion_date(related_pattern)
+        else:
+            self.max_catches[pattern] = catches
+            if catches >= 100:
+                self.completed_patterns.add(pattern)
+            else:
+                self.completed_patterns.discard(pattern)
+
+            # Update the completion date for related patterns
+            if catches == 0:
+                if pattern in self.completion_dates:
+                    del self.completion_dates[pattern]
+                    self.main_widget.pattern_table.remove_date_item(pattern)
+            else:
+                self.completion_dates[pattern] = self.get_current_human_date()
+                self.main_widget.pattern_table.update_completion_date(pattern)
 
         # Update the specific pattern
         self.max_catches[pattern] = catches

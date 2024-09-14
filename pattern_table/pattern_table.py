@@ -97,7 +97,7 @@ class PatternTable(QTableWidget):
             if self.progress_tracker.is_completed(pattern):
                 row = PatternRow(self)
                 row.highlight_if_completed(i, pattern)
-
+        self.resize_pattern_table()
 
     def add_pattern_row(self, row_index, pattern):
         row = PatternRow(self)
@@ -150,7 +150,10 @@ class PatternTable(QTableWidget):
 
         # Calculate the appropriate row height based on the font size
         font_metrics = self.fontMetrics()
-        row_height = font_metrics.height() + 10  # Adding some padding
+        padding = (
+            self.main_widget.width() // 150
+        )
+        row_height = font_metrics.height() + padding  # Adding some padding
 
         for row in range(self.rowCount()):
             self.setRowHeight(row, row_height)

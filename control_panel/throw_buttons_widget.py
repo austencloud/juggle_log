@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING
 from PyQt6.QtWidgets import QWidget, QPushButton, QGridLayout
 
+
 if TYPE_CHECKING:
-    from control_panel import ControlPanel
+    from .control_panel import ControlPanel
 
 
 class ThrowButtonsWidget(QWidget):
