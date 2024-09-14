@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from main_widget import MainWidget
 
 
-class PatternTableWidget(QTableWidget):
+class PatternTable(QTableWidget):
     COLUMN_HEADERS = ["#", "Pattern", "Max Catches", "Date Completed"]
     DATE_NOT_AVAILABLE = ""
     COMPLETED_COLOR = QColor(144, 238, 144)
